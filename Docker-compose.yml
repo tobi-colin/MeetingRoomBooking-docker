@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  #########################
+  # Setup server container     
+  #########################
+  server:
+    build: ./server
+    container_name: node
+    expose: 
+      - ${APP_SERVER_PORT}
+    environment:
+      API_HOST: ${API_HOST}
+      APP_SERVER_PORT: ${APP_SERVER_PORT}
+    ports: 
+      - ${APP_SERVER_PORT}:${APP_SERVER_PORT}
+    volumes:
+      - ./server/src:/usr/app/server/src
+    restart: on-failure
+    depends_on:
+      - database
+    command: npm start
+      
+
+  #########################
+  # Setup client container     
+  #########################
+  client:
+    build: ./client
+    container_name: vue
+    expose: 
+      - ${APP_CLIENT_PORT}
+    environment:
+      APP_CLIENT_PORT: ${APP_CLIENT_PORT}
+    ports: 
+      - ${APP_CLIENT_PORT}:${APP_CLIENT_PORT}
+    volumes:
+      - ./client/src:/usr/app/client/src
+    depends_on:
+      - server
+    command: npm run serve
+
+
+  #########################
+  # Setup database container     
+  #########################
+  database:
+    build: ./database
+    container_name: mongo
+    ports: 
+      - ${APP_DATABASE_PORT}:${APP_DATABASE_PORT}
+    command: --auth
