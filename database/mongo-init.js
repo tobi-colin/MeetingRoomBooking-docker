@@ -11,4 +11,4 @@ db.createUser({
       db: 'admin',
     },
   ],
-});
+})
